@@ -1,0 +1,25 @@
+
+# ------------------------------
+# Dataset
+# ------------------------------
+Nisqa:
+    valid = 'test'
+    test_set_name = 'LIVETALK'
+    debug = False
+
+AudioMos:
+    valid = 'test'
+
+Tencent:
+    with_reverberation = True
+
+get_dataloader:
+    num_workers = 12
+    shuffle = False
+
+# ------------------------------
+# Testing loop
+# ------------------------------
+TestingLoop:
+    dataset_cls = @AudioMos
+    is_baseline = True

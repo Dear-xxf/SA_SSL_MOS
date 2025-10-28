@@ -1,0 +1,50 @@
+# Training config
+
+# ------------------------------
+# STFT
+# ------------------------------
+stft:
+    win_length = 320
+    hop_length = 160
+    n_fft = 320
+    use_log = True
+    use_magnitude = True
+    n_mels = None
+
+
+# ------------------------------
+# Architecture
+# ------------------------------
+FPM:
+    conv_channels = (32, 32)
+    dense_neurons = (64, 32, 1)
+    use_poolings = (True, True)
+    kernel_size = 5
+    pool_size = 5
+
+SPM:
+    bn = True
+    max_pool_size = 3
+    activation_fn = @torch.nn.modules.activation.ReLU
+    
+# ------------------------------
+# Dataset
+# ------------------------------
+Nisqa:
+    debug = False
+
+get_dataloader:
+    num_workers = 12
+    shuffle = True
+
+# ------------------------------
+# Training loop
+# ------------------------------
+TrainingLoop:
+    model_cls = @SA_SSL_MOS
+    num_epochs = 30
+    learning_rate = 1e-4
+    dataset_cls = @AudioMos
+    weight_decay = 0.0
+    batch_size_train = 64
+    loss_type = 'gnll'

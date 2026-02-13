@@ -29,7 +29,7 @@ import audio
 import librosa
 import utils
 
-model = torch.jit.load(r'..\runs\biasnet\gnll_results\nisqa\run0\model_best.pt', map_location=torch.device('cpu'))
+model = torch.jit.load('model path', map_location=torch.device('cpu'))
 
 wav_path = 'path_to_your_audio_file.wav'  # Replace with your audio file path.
 ssl_path = 'path_to_your_SSL_path.npy'  # Replace with your SSL feature file path.

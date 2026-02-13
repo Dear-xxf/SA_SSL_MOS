@@ -12,6 +12,7 @@ from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
 # from transformers import AutoProcessor, Wav2Vec2BertModel
 
 from pathlib import Path
+import argparse
 
 
 def load_audio(audio_path: str, target_sr: int) -> np.ndarray:
@@ -197,8 +198,15 @@ def extract_features_audio(audio_paths: list[str], layers: list[int], model_name
 
 import glob
 
-audio_dir = 'path_to_your_audio_files'  # Replace with your audio directory
-output_feature_dir = 'path_to_save_features'  # Replace with your desired output directory
+parser = argparse.ArgumentParser(description='Gin and save path.')
+parser.add_argument('--wav_path', type=str, required=True, help='Path to the wav.')
+parser.add_argument('--save_path', type=str, required=True, help='Path to directory storing results.')
+
+args = parser.parse_args()
+
+audio_dir = args.wav_path
+output_feature_dir = args.save_path
+
 model_name = 'w2v2_xlsr_2b'
 signal_duration = 10
 selected_layers = [8]

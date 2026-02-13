@@ -1,14 +1,13 @@
 import copy
 import functools
 import math
-from typing import Any, Union, Sequence, Type
+from typing import Any, Optional, Union, Sequence, Tuple
 
 import gin
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from typing import Any, Optional, Union, Type
 
 
 def _get_conv1d_layer(
@@ -59,6 +58,7 @@ def _get_conv_layer(
 @gin.configurable
 class FPM(nn.Module):
     def __init__(self,
+                 ssl_shape: tuple[int],
                  conv_channels: Sequence[int] = (32, 32),
                  use_poolings: Sequence[bool] = (True, True),
                  kernel_size: int = 5,
@@ -137,9 +137,10 @@ class SA_SSL_MOS(nn.Module):
             self,
             ssl_shape: tuple[int],
             stft_shape: tuple[int],
+            dense_neurons: Sequence[int] = (64, 32, 1)
             ):
         super(SA_SSL_MOS, self).__init__()
-        self._fpm = FPM()
+        self._fpm = FPM(ssl_shape)
         self._spm = SPM()
 
         self._flatten = nn.Flatten()
@@ -156,7 +157,7 @@ class SA_SSL_MOS(nn.Module):
         
         return torch.cat((self._flatten(x1), self._flatten(x2)), dim=1).shape[-1]
 
-    def forward(self, ssl_data: torch.Tensor, stft_data: torch.Tensor = torch.empty(1)) -> torch.Tensor:
+    def forward(self, ssl_data: torch.Tensor, stft_data: torch.Tensor) -> torch.Tensor:
         # FPM
         ssl_vector = self._fpm(ssl_data)
         ssl_vector = self._flatten(ssl_vector)
@@ -181,16 +182,17 @@ class SSL_Layer_MOS(nn.Module):
     def __init__(
             self,
             ssl_shape: tuple[int],
+            dense_neurons: Sequence[int] = (64, 32, 1)
             ):
         super(SSL_Layer_MOS, self).__init__()
-        self._fpm = FPM()
+        self._fpm = FPM(ssl_shape)
 
         self._flatten = nn.Flatten()
 
-        in_dense = self._get_in_dense(ssl_shape, stft_shape)
+        in_dense = self._get_in_dense(ssl_shape)
         self._mos_mapping_module = MOS_mapping_module(in_dense, dense_neurons=dense_neurons)
 
-    def _get_in_dense(self, ssl_shape: tuple[int], stft_shape: tuple[int]) -> int:
+    def _get_in_dense(self, ssl_shape: tuple[int]) -> int:
         x1 = torch.zeros((1,)+ssl_shape)
         x1 = self._fpm(x1)
         return self._flatten(x1).shape[-1]

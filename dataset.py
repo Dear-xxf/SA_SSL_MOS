@@ -16,8 +16,7 @@ import librosa
 
 @gin.configurable
 class Nisqa(Dataset):
-    """The NISQA dataset."""
-    """Test dataset use audiomos2025_train."""
+    """The NISQA_Corpus dataset."""
     
     def __init__(
         self,
